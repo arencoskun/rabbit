@@ -41,7 +41,7 @@ export default function Home() {
     useState<boolean>(false);
   const [benchmarkResultsModalVisible, setBenchmarkResultsModalVisible] =
     useState<boolean>(false);
-  const [benchmarkResultState, setBenchmarkResultState] = useState<number>(-1);
+  const [benchmarkResultState, setBenchmarkResultState] = useState<number>();
   const [limitsDisabled, setLimitsDisabled] = useState<boolean>(false);
   const [settingsModalOkButtonDisabled, setSettingsModalOkButtonDisabled] =
     useState<boolean>(false);
@@ -52,6 +52,7 @@ export default function Home() {
     if (resetNeeded) {
       setResetNeeded(false);
       console.log("resetting..");
+      console.log(benchmarkResultState);
       setBoxes(fillBoxes(n));
       setGuesses(fillGuesses(n));
       setCurrentGuess(0);
@@ -85,6 +86,10 @@ export default function Home() {
       return () => clearInterval(interval);
     }
   }, [autoStep]);
+
+  useEffect(() => {
+    if (limitsDisabled) setSettingsModalOkButtonDisabled(false);
+  }, [limitsDisabled]);
 
   useEffect(() => {
     if (started && !found) {
@@ -158,7 +163,6 @@ export default function Home() {
           </Button>
           <TypographyCheckbox
             handleChange={(newValue: boolean) => {
-              console.log(newValue);
               setAutoStep(newValue);
               setStepButtonDisabled(newValue);
             }}
@@ -169,7 +173,6 @@ export default function Home() {
           </TypographyCheckbox>
         </div>
       </div>
-      {/* flex flex-wrap justify-center w-full */}
       <div
         className={`flex flex-wrap justify-center w-full ${getMarginWithCorrespondingN(
           n
@@ -195,7 +198,7 @@ export default function Home() {
               <Typography>n (the number of boxes): </Typography>
               <NumberPicker
                 handleChange={(newN: number, min?: boolean) => {
-                  if (Number.isNaN(newN) || min) {
+                  if ((Number.isNaN(newN) || min) && !limitsDisabled) {
                     setSettingsModalOkButtonDisabled(true);
                     return;
                   }
@@ -213,7 +216,7 @@ export default function Home() {
               <Typography>auto step delay (in ms): </Typography>
               <NumberPicker
                 handleChange={(newDelay: number, min?: boolean) => {
-                  if (Number.isNaN(newDelay) || min) {
+                  if ((Number.isNaN(newDelay) || min) && !limitsDisabled) {
                     setSettingsModalOkButtonDisabled(true);
                     return;
                   }
@@ -277,7 +280,7 @@ export default function Home() {
           disableBg={true}
         >
           <Typography>
-            {benchmarkResultState === -1
+            {benchmarkResultState === undefined
               ? "Error: Could not calculate benchmark result"
               : benchmarkResultState + "ms"}
           </Typography>
