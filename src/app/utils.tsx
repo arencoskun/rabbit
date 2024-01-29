@@ -79,11 +79,11 @@ function resetBenchmark() {
 
 export function runBenchmark(
   n: number,
-  rp: number,
   guessesArray: Array<number>,
   beginTime: number
 ) {
   resetBenchmark();
+  var rp: number = getRandomInt(n);
   while (!benchmark_isFound) {
     console.log("Stepping simulation...");
 
@@ -110,13 +110,12 @@ export function runBenchmark(
 
 export function getAverageBenchmarkResult(
   n: number,
-  rp: number,
   guessesArray: Array<number>,
   beginTime: number
 ) {
   var sum: number = 0;
   for (var i = 0; i < 1000; i++) {
-    sum += runBenchmark(n, rp, guessesArray, beginTime)!;
+    sum += runBenchmark(n, guessesArray, beginTime)!;
   }
 
   return sum / 1000;

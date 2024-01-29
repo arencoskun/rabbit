@@ -9,6 +9,7 @@ interface ModalProps extends ScriptProps {
   hidden: boolean;
   onCloseButtonClicked?: () => void;
   disableBg?: boolean;
+  buttonDisabled?: boolean;
   modalVisible: boolean;
   setModalVisible: (modalVisible: boolean) => void;
 }
@@ -21,13 +22,6 @@ export default function Modal({
   onCloseButtonClicked,
   ...props
 }: ModalProps) {
-  //const rest = props;
-  /*const [modalVisible, setModalVisible] = useState<boolean>(!hidden!);
-
-  useEffect(() => {
-    setModalVisible(!hidden);
-  }, [hidden]);*/
-
   return (
     <div>
       {/* Backdrop */}
@@ -36,7 +30,6 @@ export default function Modal({
           !props.modalVisible || props.disableBg ? "hidden" : ""
         } fixed inset-0 opacity-50 bg-black z-40`}
       ></div>
-
       {/* Modal */}
       <div
         id={id}
@@ -49,12 +42,6 @@ export default function Modal({
         <div className="fixed inset-0 transition-opacity" aria-hidden="true">
           <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
-        <span
-          className="hidden sm:inline-block sm:align-middle sm:h-screen"
-          aria-hidden="true"
-        >
-          &#8203;
-        </span>
         <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
           <div className="relative p-4 w-full max-w-2xl max-h-full">
             <div className="relative rounded-lg shadow bg-gray-300">
@@ -68,6 +55,7 @@ export default function Modal({
                     props.setModalVisible(false);
                     if (onCloseButtonClicked) onCloseButtonClicked();
                   }}
+                  disabled={props.buttonDisabled}
                 >
                   OK
                 </Button>

@@ -43,6 +43,8 @@ export default function Home() {
     useState<boolean>(false);
   const [benchmarkResultState, setBenchmarkResultState] = useState<number>(-1);
   const [limitsDisabled, setLimitsDisabled] = useState<boolean>(false);
+  const [settingsModalOkButtonDisabled, setSettingsModalOkButtonDisabled] =
+    useState<boolean>(false);
 
   var interval: NodeJS.Timeout;
 
@@ -61,6 +63,7 @@ export default function Home() {
       setStepButtonDisabled(false);
       setSettingsButtonDisabled(false);
       setAutoStepCounterStarted(false);
+      setSettingsModalOkButtonDisabled(false);
       clearInterval(interval);
       setTurn(0);
     }
@@ -185,12 +188,17 @@ export default function Home() {
           hidden={!settingsModalVisible}
           modalVisible={settingsModalVisible}
           setModalVisible={setSettingsModalVisible}
+          buttonDisabled={settingsModalOkButtonDisabled}
         >
           <div>
             <div className="flex flex-row place-items-center">
               <Typography>n (the number of boxes): </Typography>
               <NumberPicker
-                handleChange={(newN: number) => {
+                handleChange={(newN: number, min?: boolean) => {
+                  if (Number.isNaN(newN) || min) {
+                    setSettingsModalOkButtonDisabled(true);
+                    return;
+                  }
                   setN(newN);
                   setResetNeeded(true);
                 }}
@@ -198,18 +206,24 @@ export default function Home() {
                 className="ml-1"
                 minValue={limitsDisabled ? 0 : 10}
                 maxValue={limitsDisabled ? 9999 : 500}
+                defaultValue={n.toString()}
               ></NumberPicker>
             </div>
             <div className="flex flex-row place-items-center">
               <Typography>auto step delay (in ms): </Typography>
               <NumberPicker
-                handleChange={(newDelay: number) => {
+                handleChange={(newDelay: number, min?: boolean) => {
+                  if (Number.isNaN(newDelay) || min) {
+                    setSettingsModalOkButtonDisabled(true);
+                    return;
+                  }
                   setAutoStepDelay(newDelay);
                   setResetNeeded(true);
                 }}
                 placeholder="500"
                 className="ml-4"
                 minValue={limitsDisabled ? 1 : 100}
+                defaultValue={autoStepDelay.toString()}
               ></NumberPicker>
             </div>
             <TypographyCheckbox
@@ -237,19 +251,16 @@ export default function Home() {
             <Button
               onClick={() => {
                 setBenchmarkResultState(
-                  getAverageBenchmarkResult(n, rp!, guesses!, Date.now())!
+                  getAverageBenchmarkResult(n, guesses!, Date.now())!
                 );
                 setBenchmarkResultsModalVisible(true);
               }}
             >
               Run benchmark
             </Button>
-
             <Button
               onClick={() => {
-                setBenchmarkResultState(
-                  runBenchmark(n, rp!, guesses!, Date.now())!
-                );
+                setBenchmarkResultState(runBenchmark(n, guesses!, Date.now())!);
                 setBenchmarkResultsModalVisible(true);
               }}
             >
