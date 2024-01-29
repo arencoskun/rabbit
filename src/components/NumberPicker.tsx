@@ -17,7 +17,7 @@ export default function NumberPicker({
     <form className={`max-w-sm ${props.className}`}>
       <input
         type="number"
-        className="bg-gray-100 border border-gray-300 text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-2/3 p-2.5 dark:bg-gray-100 dark:border-gray-400 dark:placeholder-gray-600 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        className="border text-sm rounded-lg block w-2/3 p-2.5 bg-gray-100 border-gray-400 placeholder-gray-600 text-black focus:ring-blue-500 focus:border-blue-500"
         placeholder={placeholder}
         max={props.maxValue}
         min={props.minValue}
