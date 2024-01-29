@@ -4,9 +4,11 @@ import { useCallback, useEffect, useState } from "react";
 import {
   fillBoxes,
   fillGuesses,
+  getAverageBenchmarkResult,
   getBGColorWithCorrespondingBoxID,
   getMarginWithCorrespondingN,
   getRandomInt,
+  runBenchmark,
 } from "./utils";
 import Typography from "@/components/Typography";
 import Button from "@/components/Button";
@@ -36,6 +38,9 @@ export default function Home() {
   const [settingsButtonDisabled, setSettingsButtonDisabled] =
     useState<boolean>(false);
   const [autoStepDelay, setAutoStepDelay] = useState<number>(500);
+  const [benchmarkModalVisible, setBenchmarkModalVisible] =
+    useState<boolean>(false);
+  const [limitsDisabled, setLimitsDisabled] = useState<boolean>(false);
 
   var interval: NodeJS.Timeout;
 
@@ -120,7 +125,7 @@ export default function Home() {
 
   return (
     //color: ${isFound ? 'red' : 'green'}
-    <main className="flex min-h-screen flex-col items-center justify-between px-72 py-16">
+    <main className="flex min-h-screen flex-col items-center justify-between px-64 py-16">
       <div
         className={`z-10 max-w-5xl w-full items-start justify-between font-mono text-sm flex p-2 ${
           found ? "bg-red-400" : ""
@@ -141,6 +146,9 @@ export default function Home() {
             disabled={settingsButtonDisabled}
           >
             Settings
+          </Button>
+          <Button onClick={() => setBenchmarkModalVisible(true)}>
+            Benchmark
           </Button>
           <TypographyCheckbox
             handleChange={(newValue: boolean) => {
@@ -167,44 +175,87 @@ export default function Home() {
           );
         })}
       </div>
+      <div>
+        <Modal
+          title="Settings"
+          id="settings-modal"
+          hidden={!settingsModalVisible}
+          onCloseButtonClicked={() => {
+            setSettingsModalVisible(false);
+            console.log(settingsModalVisible);
+          }}
+        >
+          <div>
+            <div className="flex flex-row place-items-center">
+              <Typography>n (the number of boxes): </Typography>
+              <NumberPicker
+                handleChange={(newN: number) => {
+                  setN(newN);
+                  setResetNeeded(true);
+                }}
+                placeholder="10"
+                className="ml-1"
+                minValue={limitsDisabled ? 0 : 10}
+                maxValue={limitsDisabled ? 9999 : 500}
+              ></NumberPicker>
+            </div>
+            <div className="flex flex-row place-items-center">
+              <Typography>auto step delay (in ms): </Typography>
+              <NumberPicker
+                handleChange={(newDelay: number) => {
+                  setAutoStepDelay(newDelay);
+                  setResetNeeded(true);
+                }}
+                placeholder="500"
+                className="ml-4"
+                minValue={limitsDisabled ? 1 : 100}
+              ></NumberPicker>
+            </div>
+            <TypographyCheckbox
+              handleChange={(newValue: boolean) => {
+                setLimitsDisabled(newValue);
+              }}
+              typographyFontSizeOverride="text-s"
+            >
+              Disable limits (potentially unstable and inperformant)
+            </TypographyCheckbox>
+          </div>
+        </Modal>
+        <Modal
+          title={"Benchmark"}
+          id={"benchmark-modal"}
+          hidden={!benchmarkModalVisible}
+          onCloseButtonClicked={() => {
+            //console.log(runBenchmark(n, rp!, guesses!, Date.now()));
+            setBenchmarkModalVisible(false);
+          }}
+        >
+          <Typography>
+            run 1000 simulations with the current n value and get the average
+            time in ms
+          </Typography>
+          <div className="space-x-4">
+            <Button
+              onClick={() =>
+                alert(
+                  getAverageBenchmarkResult(n, rp!, guesses!, Date.now())! +
+                    "ms"
+                )
+              }
+            >
+              Run benchmark
+            </Button>
 
-      <Modal
-        title="Settings"
-        id="settings-modal"
-        hidden={!settingsModalVisible}
-        onCloseButtonClicked={() => {
-          setSettingsModalVisible(false);
-          console.log(settingsModalVisible);
-        }}
-      >
-        <div>
-          <div className="flex flex-row place-items-center">
-            <Typography>n (the number of boxes): </Typography>
-            <NumberPicker
-              handleChange={(newN: number) => {
-                setN(newN);
-                setResetNeeded(true);
-              }}
-              placeholder="10"
-              className="ml-1"
-              minValue={10}
-              maxValue={500}
-            ></NumberPicker>
+            <Button
+              onClick={() =>
+                alert(runBenchmark(n, rp!, guesses!, Date.now())! + "ms")
+              }
+            >
+              Run single benchmark
+            </Button>
           </div>
-          <div className="flex flex-row place-items-center">
-            <Typography>auto step delay (in ms): </Typography>
-            <NumberPicker
-              handleChange={(newDelay: number) => {
-                setAutoStepDelay(newDelay);
-                setResetNeeded(true);
-              }}
-              placeholder="500"
-              className="ml-4"
-              minValue={100}
-            ></NumberPicker>
-          </div>
-        </div>
-      </Modal>
+        </Modal>
+      </div>
     </main>
   );
 }

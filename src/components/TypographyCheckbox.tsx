@@ -5,6 +5,7 @@ interface TypographyCheckboxProps
   extends InputHTMLAttributes<HTMLInputElement> {
   handleChange: (newValue: boolean) => void;
   valueOverrideState?: boolean;
+  typographyFontSizeOverride?: string;
 }
 
 export default function TypographyCheckbox({
@@ -15,7 +16,9 @@ export default function TypographyCheckbox({
 }: TypographyCheckboxProps) {
   return (
     <div className="flex flex-row items-center space-x-4">
-      <Typography>{children}</Typography>
+      <Typography fontSizeOverride={props.typographyFontSizeOverride}>
+        {children}
+      </Typography>
       <input
         type="checkbox"
         checked={props.valueOverrideState}

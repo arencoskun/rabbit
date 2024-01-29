@@ -1,5 +1,17 @@
 import { ScriptProps } from "next/script";
 
-export default function Typography({ children, ...props }: ScriptProps) {
-  return <p className={`text-xl font-medium ${props.className}`}>{children}</p>;
+interface TypographyProps extends ScriptProps {
+  fontSizeOverride?: string;
+}
+
+export default function Typography({ children, ...props }: TypographyProps) {
+  return (
+    <p
+      className={`${
+        props.fontSizeOverride ? props.fontSizeOverride : "text-xl"
+      } font-medium ${props.className}`}
+    >
+      {children}
+    </p>
+  );
 }

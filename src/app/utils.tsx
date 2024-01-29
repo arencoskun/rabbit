@@ -66,3 +66,58 @@ export function getMarginWithCorrespondingN(n: number) {
 export function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
+
+var benchmark_isFound: boolean = false;
+var benchmark_currentGuess: number = 0;
+var benchmark_turn: number = 1;
+
+function resetBenchmark() {
+  benchmark_isFound = false;
+  benchmark_currentGuess = 0;
+  benchmark_turn = 1;
+}
+
+export function runBenchmark(
+  n: number,
+  rp: number,
+  guessesArray: Array<number>,
+  beginTime: number
+) {
+  resetBenchmark();
+  while (!benchmark_isFound) {
+    console.log("Stepping simulation...");
+
+    if (benchmark_currentGuess === rp) {
+      benchmark_isFound = true;
+      return Date.now() - beginTime;
+    }
+
+    benchmark_currentGuess =
+      guessesArray![n % 2 != 0 ? benchmark_turn - 1 : benchmark_turn];
+
+    if (rp === 0) {
+      rp++;
+    } else if (rp === n - 1) {
+      rp--;
+    } else {
+      rp = Math.random() < 0.5 ? rp - 1 : rp + 1;
+    }
+
+    console.log(benchmark_turn);
+    benchmark_turn++;
+  }
+}
+
+export function getAverageBenchmarkResult(
+  n: number,
+  rp: number,
+  guessesArray: Array<number>,
+  beginTime: number
+) {
+  var sum: number = 0;
+  for (var i = 0; i < 1000; i++) {
+    sum += runBenchmark(n, rp, guessesArray, beginTime)!;
+  }
+
+  return sum / 1000;
+}
