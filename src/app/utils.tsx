@@ -19,8 +19,6 @@ export function fillGuesses(n: number): Array<number> {
     }
   }
 
-  console.log(guessesArray);
-
   return guessesArray;
 }
 
@@ -88,7 +86,7 @@ export const runBenchmarkAsync = async (
     if (benchmark_currentGuess === rp) {
       benchmark_isFound = true;
       return new Promise<number>((resolve) => {
-        resolve(Date.now() - beginTime);
+        resolve(performance.now() - beginTime);
       });
     }
 

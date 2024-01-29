@@ -52,8 +52,6 @@ export default function Home() {
   useEffect(() => {
     if (resetNeeded) {
       setResetNeeded(false);
-      console.log("resetting..");
-      console.log(benchmarkResultState);
       setBoxes(fillBoxes(n));
       setGuesses(fillGuesses(n));
       setCurrentGuess(0);
@@ -94,7 +92,6 @@ export default function Home() {
 
   useEffect(() => {
     if (started && !found) {
-      console.log("Stepping simulation...");
       for (var boxIndex = 0; boxIndex < n; boxIndex++) {
         boxes![boxIndex] = 0;
       }
@@ -116,8 +113,6 @@ export default function Home() {
         setRp(Math.random() < 0.5 ? rp! - 1 : rp! + 1);
       }
       boxes![rp!] = 2;
-
-      console.log(turn);
     }
   }, [turn]);
 
@@ -256,7 +251,11 @@ export default function Home() {
               onClick={async () => {
                 setBenchmarkRunning(true);
                 setBenchmarkResultState(
-                  await getAverageBenchmarkResultAsync(n, guesses!, Date.now())!
+                  await getAverageBenchmarkResultAsync(
+                    n,
+                    guesses!,
+                    performance.now()
+                  )!
                 );
                 setBenchmarkResultsModalVisible(true);
               }}
@@ -268,7 +267,7 @@ export default function Home() {
               onClick={async () => {
                 setBenchmarkRunning(true);
                 setBenchmarkResultState(
-                  await runBenchmarkAsync(n, guesses!, Date.now())!
+                  await runBenchmarkAsync(n, guesses!, performance.now())!
                 );
                 setBenchmarkResultsModalVisible(true);
               }}
