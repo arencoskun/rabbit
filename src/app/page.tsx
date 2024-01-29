@@ -1,5 +1,4 @@
 "use client";
-
 import { useCallback, useEffect, useState } from "react";
 import {
   fillBoxes,
@@ -40,6 +39,9 @@ export default function Home() {
   const [autoStepDelay, setAutoStepDelay] = useState<number>(500);
   const [benchmarkModalVisible, setBenchmarkModalVisible] =
     useState<boolean>(false);
+  const [benchmarkResultsModalVisible, setBenchmarkResultsModalVisible] =
+    useState<boolean>(false);
+  const [benchmarkResultState, setBenchmarkResultState] = useState<number>(-1);
   const [limitsDisabled, setLimitsDisabled] = useState<boolean>(false);
 
   var interval: NodeJS.Timeout;
@@ -50,6 +52,7 @@ export default function Home() {
       console.log("resetting..");
       setBoxes(fillBoxes(n));
       setGuesses(fillGuesses(n));
+      setCurrentGuess(0);
       setRp(getRandomInt(n));
       setFound(false);
       setStarted(false);
@@ -180,10 +183,8 @@ export default function Home() {
           title="Settings"
           id="settings-modal"
           hidden={!settingsModalVisible}
-          onCloseButtonClicked={() => {
-            setSettingsModalVisible(false);
-            console.log(settingsModalVisible);
-          }}
+          modalVisible={settingsModalVisible}
+          setModalVisible={setSettingsModalVisible}
         >
           <div>
             <div className="flex flex-row place-items-center">
@@ -225,10 +226,8 @@ export default function Home() {
           title={"Benchmark"}
           id={"benchmark-modal"}
           hidden={!benchmarkModalVisible}
-          onCloseButtonClicked={() => {
-            //console.log(runBenchmark(n, rp!, guesses!, Date.now()));
-            setBenchmarkModalVisible(false);
-          }}
+          modalVisible={benchmarkModalVisible}
+          setModalVisible={setBenchmarkModalVisible}
         >
           <Typography>
             run 1000 simulations with the current n value and get the average
@@ -236,24 +235,41 @@ export default function Home() {
           </Typography>
           <div className="space-x-4">
             <Button
-              onClick={() =>
-                alert(
-                  getAverageBenchmarkResult(n, rp!, guesses!, Date.now())! +
-                    "ms"
-                )
-              }
+              onClick={() => {
+                setBenchmarkResultState(
+                  getAverageBenchmarkResult(n, rp!, guesses!, Date.now())!
+                );
+                setBenchmarkResultsModalVisible(true);
+              }}
             >
               Run benchmark
             </Button>
 
             <Button
-              onClick={() =>
-                alert(runBenchmark(n, rp!, guesses!, Date.now())! + "ms")
-              }
+              onClick={() => {
+                setBenchmarkResultState(
+                  runBenchmark(n, rp!, guesses!, Date.now())!
+                );
+                setBenchmarkResultsModalVisible(true);
+              }}
             >
               Run single benchmark
             </Button>
           </div>
+        </Modal>
+        <Modal
+          title={"Benchmark results"}
+          id={"benchmark-results-modal"}
+          hidden={!benchmarkResultsModalVisible}
+          modalVisible={benchmarkResultsModalVisible}
+          setModalVisible={setBenchmarkResultsModalVisible}
+          disableBg={true}
+        >
+          <Typography>
+            {benchmarkResultState === -1
+              ? "Error: Could not calculate benchmark result"
+              : benchmarkResultState + "ms"}
+          </Typography>
         </Modal>
       </div>
     </main>

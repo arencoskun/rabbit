@@ -7,7 +7,10 @@ interface ModalProps extends ScriptProps {
   title: string;
   id: string;
   hidden: boolean;
-  onCloseButtonClicked: () => void;
+  onCloseButtonClicked?: () => void;
+  disableBg?: boolean;
+  modalVisible: boolean;
+  setModalVisible: (modalVisible: boolean) => void;
 }
 
 export default function Modal({
@@ -18,20 +21,20 @@ export default function Modal({
   onCloseButtonClicked,
   ...props
 }: ModalProps) {
-  const rest = props;
-  const [modalVisible, setModalVisible] = useState<boolean>(!hidden!);
+  //const rest = props;
+  /*const [modalVisible, setModalVisible] = useState<boolean>(!hidden!);
 
   useEffect(() => {
     setModalVisible(!hidden);
-  }, [hidden]);
+  }, [hidden]);*/
 
   return (
     <div>
       {/* Backdrop */}
       <div
         className={`${
-          !modalVisible ? "hidden" : ""
-        } fixed inset-0 bg-black opacity-50 z-40`}
+          !props.modalVisible || props.disableBg ? "hidden" : ""
+        } fixed inset-0 opacity-50 bg-black z-40`}
       ></div>
 
       {/* Modal */}
@@ -40,7 +43,7 @@ export default function Modal({
         data-modal-backdrop="static"
         aria-hidden="true"
         className={`${
-          !modalVisible ? "hidden" : ""
+          !props.modalVisible ? "hidden" : ""
         } fixed inset-0 overflow-y-auto overflow-x-hidden flex items-center justify-center z-50`}
       >
         <div className="fixed inset-0 transition-opacity" aria-hidden="true">
@@ -62,8 +65,8 @@ export default function Modal({
               <div className="flex items-center p-4 md:p-5 border-t border-gray-600 rounded-b justify-end">
                 <Button
                   onClick={() => {
-                    setModalVisible(false);
-                    onCloseButtonClicked();
+                    props.setModalVisible(false);
+                    if (onCloseButtonClicked) onCloseButtonClicked();
                   }}
                 >
                   OK
