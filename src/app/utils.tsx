@@ -87,7 +87,9 @@ export const runBenchmarkAsync = async (
   while (!benchmark_isFound) {
     if (benchmark_currentGuess === rp) {
       benchmark_isFound = true;
-      return Date.now() - beginTime;
+      return new Promise<number>((resolve) => {
+        resolve(Date.now() - beginTime);
+      });
     }
 
     benchmark_currentGuess =
@@ -118,5 +120,7 @@ export const getAverageBenchmarkResultAsync = async (
     sum += bench;
   }
 
-  return sum / 1000;
+  return new Promise<number>((resolve) => {
+    resolve(sum / 1000);
+  });
 };
