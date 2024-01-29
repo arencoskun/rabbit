@@ -14,14 +14,7 @@ interface ModalProps extends ScriptProps {
   setModalVisible: (modalVisible: boolean) => void;
 }
 
-export default function Modal({
-  children,
-  title,
-  hidden,
-  id,
-  onCloseButtonClicked,
-  ...props
-}: ModalProps) {
+export default function Modal({ children, ...props }: ModalProps) {
   return (
     <div>
       {/* Backdrop */}
@@ -32,7 +25,7 @@ export default function Modal({
       ></div>
       {/* Modal */}
       <div
-        id={id}
+        id={props.id}
         data-modal-backdrop="static"
         aria-hidden="true"
         className={`${
@@ -46,14 +39,15 @@ export default function Modal({
           <div className="relative p-4 w-full max-w-2xl max-h-full">
             <div className="relative rounded-lg shadow bg-gray-300">
               <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-600">
-                <Typography>{title}</Typography>
+                <Typography>{props.title}</Typography>
               </div>
               <div className="p-4 md:p-5 space-y-4">{children}</div>
               <div className="flex items-center p-4 md:p-5 border-t border-gray-600 rounded-b justify-end">
                 <Button
                   onClick={() => {
                     props.setModalVisible(false);
-                    if (onCloseButtonClicked) onCloseButtonClicked();
+                    if (props.onCloseButtonClicked)
+                      props.onCloseButtonClicked();
                   }}
                   disabled={props.buttonDisabled}
                 >

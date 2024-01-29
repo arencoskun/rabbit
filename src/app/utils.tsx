@@ -76,17 +76,15 @@ function resetBenchmark() {
   benchmark_currentGuess = 0;
   benchmark_turn = 1;
 }
-
-export function runBenchmark(
+// async (url: string): Promise<T> =>
+export const runBenchmarkAsync = async (
   n: number,
   guessesArray: Array<number>,
   beginTime: number
-) {
+): Promise<number | undefined> => {
   resetBenchmark();
   var rp: number = getRandomInt(n);
   while (!benchmark_isFound) {
-    console.log("Stepping simulation...");
-
     if (benchmark_currentGuess === rp) {
       benchmark_isFound = true;
       return Date.now() - beginTime;
@@ -103,20 +101,22 @@ export function runBenchmark(
       rp = Math.random() < 0.5 ? rp - 1 : rp + 1;
     }
 
-    console.log(benchmark_turn);
     benchmark_turn++;
   }
-}
+  return undefined;
+};
 
-export function getAverageBenchmarkResult(
+export const getAverageBenchmarkResultAsync = async (
   n: number,
   guessesArray: Array<number>,
   beginTime: number
-) {
+): Promise<number | undefined> => {
   var sum: number = 0;
   for (var i = 0; i < 1000; i++) {
-    sum += runBenchmark(n, guessesArray, beginTime)!;
+    const bench = await runBenchmarkAsync(n, guessesArray, beginTime);
+    if (bench === undefined) return undefined;
+    sum += bench;
   }
 
   return sum / 1000;
-}
+};

@@ -3,11 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 import {
   fillBoxes,
   fillGuesses,
-  getAverageBenchmarkResult,
+  getAverageBenchmarkResultAsync,
   getBGColorWithCorrespondingBoxID,
   getMarginWithCorrespondingN,
   getRandomInt,
-  runBenchmark,
+  runBenchmarkAsync,
 } from "./utils";
 import Typography from "@/components/Typography";
 import Button from "@/components/Button";
@@ -45,6 +45,7 @@ export default function Home() {
   const [limitsDisabled, setLimitsDisabled] = useState<boolean>(false);
   const [settingsModalOkButtonDisabled, setSettingsModalOkButtonDisabled] =
     useState<boolean>(false);
+  const [benchmarkRunning, setBenchmarkRunning] = useState<boolean>(false);
 
   var interval: NodeJS.Timeout;
 
@@ -252,20 +253,26 @@ export default function Home() {
           </Typography>
           <div className="space-x-4">
             <Button
-              onClick={() => {
+              onClick={async () => {
+                setBenchmarkRunning(true);
                 setBenchmarkResultState(
-                  getAverageBenchmarkResult(n, guesses!, Date.now())!
+                  await getAverageBenchmarkResultAsync(n, guesses!, Date.now())!
                 );
                 setBenchmarkResultsModalVisible(true);
               }}
+              disabled={benchmarkRunning}
             >
               Run benchmark
             </Button>
             <Button
-              onClick={() => {
-                setBenchmarkResultState(runBenchmark(n, guesses!, Date.now())!);
+              onClick={async () => {
+                setBenchmarkRunning(true);
+                setBenchmarkResultState(
+                  await runBenchmarkAsync(n, guesses!, Date.now())!
+                );
                 setBenchmarkResultsModalVisible(true);
               }}
+              disabled={benchmarkRunning}
             >
               Run single benchmark
             </Button>
@@ -278,6 +285,7 @@ export default function Home() {
           modalVisible={benchmarkResultsModalVisible}
           setModalVisible={setBenchmarkResultsModalVisible}
           disableBg={true}
+          onCloseButtonClicked={() => setBenchmarkRunning(false)}
         >
           <Typography>
             {benchmarkResultState === undefined
